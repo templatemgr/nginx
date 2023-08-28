@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 # shellcheck shell=bash
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-##@Version           :  202308281305-git
+##@Version           :  202308281421-git
 # @@Author           :  Jason Hempstead
 # @@Contact          :  jason@casjaysdev.pro
 # @@License          :  LICENSE.md
 # @@ReadME           :  php.sh --help
 # @@Copyright        :  Copyright: (c) 2023 Jason Hempstead, Casjays Developments
-# @@Created          :  Monday, Aug 28, 2023 13:05 EDT
+# @@Created          :  Monday, Aug 28, 2023 14:21 EDT
 # @@File             :  php.sh
 # @@Description      :
 # @@Changelog        :  New script
@@ -441,11 +441,13 @@ __run_start_script() {
       __cd "${workdir:-$home}"
       echo "$message"
       su_cmd touch "$SERVICE_PID_FILE"
-      __post_execute 2>"/dev/stderr" 2>&1 |& tee -a "$LOG_DIR/init.txt" &>/dev/null &
+      __post_execute |& tee -a "$LOG_DIR/init.txt" &>/dev/null &
       if [ "$RESET_ENV" = "yes" ]; then
-        su_cmd env -i HOME="$home" LC_CTYPE="$lc_type" PATH="$path" HOSTNAME="$sysname" USER="${SERVICE_USER:-$RUNAS_USER}" $extra_env sh -c "$cmd_exec" 2>"/dev/stderr" || return 10
+        su_cmd env -i HOME="$home" LC_CTYPE="$lc_type" PATH="$path" HOSTNAME="$sysname" USER="${SERVICE_USER:-$RUNAS_USER}" $extra_env sh -c "$cmd_exec" ||
+          eval env -i HOME="$home" LC_CTYPE="$lc_type" PATH="$path" HOSTNAME="$sysname" USER="${SERVICE_USER:-$RUNAS_USER}" $extra_env sh -c "$cmd_exec" ||
+          return 10
       else
-        eval "$cmd_exec" 2>"/dev/stderr" || return 10
+        eval "$cmd_exec" || return 10
       fi
     fi
   fi
