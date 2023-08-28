@@ -25,7 +25,7 @@
 # shellcheck disable=SC2199
 # shellcheck disable=SC2317
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-BASH_SET_SAVED_OPTIONS=$(set +o) && set +ex
+BASH_SET_SAVED_OPTIONS=$(set +o) && set +e -x
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # check for command
 __cmd_exists() { command "$1" >/dev/null 2>&1 || return 1; }
@@ -68,10 +68,12 @@ mkdir -p "/etc/$TEMPLATE_NAME" "$DEFAULT_CONF_DIR" "$INIT_DIR"
 if [ -d "$TMP_DIR/init-scripts" ]; then
   init_scripts="$(ls -A "$TMP_DIR/init-scripts/" | grep '^' || false)"
   if [ -n "$init_scripts" ]; then
+    mkdir -p "$INIT_DIR"
     for init_script in $init_scripts; do
       if [ ! -f "$INIT_DIR/$init_script" ]; then
         echo "Installing  $INIT_DIR/$init_script"
-        cp -Rf "$TMP_DIR/init-scripts/$init_script" "$INIT_DIR/$init_script" || true
+        cp -Rf "$TMP_DIR/init-scripts/$init_script" "$INIT_DIR/$init_script" &&
+          chmod -Rf 755 "$INIT_DIR/$init_script" || true
       fi
     done
   fi
