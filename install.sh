@@ -43,6 +43,7 @@ CONFIG_CHECK_FILE=""
 TMP_DIR="/tmp/config-$TEMPLATE_NAME"
 CONFIG_DIR="/usr/local/share/template-files/config/$TEMPLATE_NAME"
 INIT_DIR="/usr/local/etc/docker/init.d"
+OVER_WRITE_INIT="yes"
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 GIT_REPO="https://github.com/templatemgr/$TEMPLATE_NAME"
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -70,7 +71,7 @@ if [ -d "$TMP_DIR/init-scripts" ]; then
   if [ -n "$init_scripts" ]; then
     mkdir -p "$INIT_DIR"
     for init_script in $init_scripts; do
-      if [ ! -f "$INIT_DIR/$init_script" ]; then
+      if [ "$OVER_WRITE_INIT" = "yes" ] || [ ! -f "$INIT_DIR/$init_script" ]; then
         echo "Installing  $INIT_DIR/$init_script"
         cp -Rf "$TMP_DIR/init-scripts/$init_script" "$INIT_DIR/$init_script" &&
           chmod -Rf 755 "$INIT_DIR/$init_script" || true
