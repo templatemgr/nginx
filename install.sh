@@ -38,7 +38,7 @@ INSTALL_SH_EXIT_STATUS=0
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # Define Variables
 TEMPLATE_NAME="nginx"
-CONFIG_CHECK_FILE=""
+CONFIG_CHECK_FILE="nginx.conf"
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TMP_DIR="/tmp/config-$TEMPLATE_NAME"
 CONFIG_DIR="/usr/local/share/template-files/config/$TEMPLATE_NAME"
@@ -84,7 +84,10 @@ fi
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 [ -d "$TMP_DIR" ] && rm -Rf "$TMP_DIR" || true
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-[ -f "$DEFAULT_CONF_DIR/$CONFIG_CHECK_FILE" ] || INSTALL_SH_EXIT_STATUS=1
+if [ ! -f "$DEFAULT_CONF_DIR/$CONFIG_CHECK_FILE" ]; then
+  echo "Can not find a config file in $DEFAULT_CONF_DIR"
+  INSTALL_SH_EXIT_STATUS=1
+fi
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # End application
 eval "$BASH_SET_SAVED_OPTIONS"
