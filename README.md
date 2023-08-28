@@ -1,9 +1,9 @@
-## 👋  template config files 🚀  
+## 👋  nginx config files 🚀  
 
 ### Install
   
 ```shell
-bash -c "$(curl -q -LSsf "https://github.com/templatemgr/template/raw/main/install.sh")"
+bash -c "$(curl -q -LSsf "https://github.com/templatemgr/nginx/raw/main/install.sh")"
 ```
   
 ## Author  
