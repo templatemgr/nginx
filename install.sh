@@ -25,6 +25,8 @@
 # shellcheck disable=SC2199
 # shellcheck disable=SC2317
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+BASH_SET_SAVED_OPTIONS=$(set +o) && set +ex
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # check for command
 __cmd_exists() { command "$1" >/dev/null 2>&1 || return 1; }
 __function_exists() { command -v "$1" 2>&1 | grep -q "is a function" || return 1; }
@@ -77,11 +79,12 @@ fi
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 [ -d "$INIT_DIR" ] && chmod -Rf 755 "$INIT_DIR"/*.sh || true
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-[ -d "$TMP_DIR" ] && rm -Rf "$TMP_DIR"
+[ -d "$TMP_DIR" ] && rm -Rf "$TMP_DIR" || true
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 [ -f "$DEFAULT_CONF_DIR/$CONFIG_CHECK_FILE" ] || INSTALL_SH_EXIT_STATUS=1
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # End application
+eval "$BASH_SET_SAVED_OPTIONS"
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # lets exit with code
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
