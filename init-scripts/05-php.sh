@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 # shellcheck shell=bash
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-##@Version           :  202308281421-git
+##@Version           :  202308281720-git
 # @@Author           :  Jason Hempstead
 # @@Contact          :  jason@casjaysdev.pro
-# @@License          :  LICENSE.md
+# @@License          :  WTFPL
 # @@ReadME           :  php.sh --help
 # @@Copyright        :  Copyright: (c) 2023 Jason Hempstead, Casjays Developments
-# @@Created          :  Monday, Aug 28, 2023 14:21 EDT
+# @@Created          :  Monday, Aug 28, 2023 17:20 EDT
 # @@File             :  php.sh
 # @@Description      :
 # @@Changelog        :  New script
@@ -83,6 +83,7 @@ CONF_DIR="/config/php" # set config directory
 # set the containers etc directory
 ETC_DIR="/etc/php"
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+TMP_DIR="/tmp/php"
 RUN_DIR="/run/php"       # set scripts pid dir
 LOG_DIR="/data/logs/php" # set log directory
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -140,13 +141,16 @@ IS_DATABASE_SERVICE="no"
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # Additional variables
 
+# Set to yes to enable the built in php dev server
+PHP_DEV_SERVER_START="no"
+PHP_DEV_SERVER_PORT="80"
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # Specifiy custom directories to be created
 ADD_APPLICATION_FILES=""
 ADD_APPLICATION_DIRS=""
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 APPLICATION_FILES="$LOG_DIR/php.log"
-APPLICATION_DIRS="$RUN_DIR $ETC_DIR $CONF_DIR $LOG_DIR"
+APPLICATION_DIRS="$RUN_DIR $ETC_DIR $CONF_DIR $LOG_DIR $TMP_DIR"
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # Additional config dirs - will be Copied to /etc/$name
 ADDITIONAL_CONFIG_DIRS=""
@@ -234,10 +238,6 @@ __update_conf_files() {
   # __replace "" "" "$CONF_DIR/php.conf"
   # replace variables recursively
   #  __find_replace "" "" "$CONF_DIR"
-  __find_replace "REPLACE_WWW_USER" "${SERVICE_USER:-root}" "$CONF_DIR"
-  __find_replace "REPLACE_APP_USER" "${SERVICE_USER:-root}" "$CONF_DIR"
-  __find_replace "REPLACE_WWW_GROUP" "${SERVICE_GROUP:-${SERVICE_USER:-root}}" "$CONF_DIR"
-  __find_replace "REPLACE_APP_GROUP" "${SERVICE_GROUP:-${SERVICE_USER:-root}}" "$CONF_DIR"
 
   # execute if directory is empty
   #__is_dir_empty "" && true || false

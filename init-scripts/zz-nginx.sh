@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 # shellcheck shell=bash
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-##@Version           :  202308281421-git
+##@Version           :  202308281720-git
 # @@Author           :  Jason Hempstead
 # @@Contact          :  jason@casjaysdev.pro
-# @@License          :  LICENSE.md
+# @@License          :  WTFPL
 # @@ReadME           :  nginx.sh --help
 # @@Copyright        :  Copyright: (c) 2023 Jason Hempstead, Casjays Developments
-# @@Created          :  Monday, Aug 28, 2023 14:21 EDT
+# @@Created          :  Monday, Aug 28, 2023 17:20 EDT
 # @@File             :  nginx.sh
 # @@Description      :
 # @@Changelog        :  New script
@@ -83,6 +83,7 @@ CONF_DIR="/config/nginx" # set config directory
 # set the containers etc directory
 ETC_DIR="/etc/nginx"
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+TMP_DIR="/tmp/nginx"
 RUN_DIR="/run/nginx"       # set scripts pid dir
 LOG_DIR="/data/logs/nginx" # set log directory
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -127,7 +128,7 @@ EXEC_CMD_ARGS='-c $ETC_DIR/nginx.conf' # command arguments
 EXEC_PRE_SCRIPT=''                     # execute script before
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # Is this service a web server
-IS_WEB_SERVER="no"
+IS_WEB_SERVER="yes"
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # Is this service a database server
 IS_DATABASE_SERVICE="no"
@@ -136,10 +137,6 @@ IS_DATABASE_SERVICE="no"
 [ -f "$CONF_DIR/env/nginx.sh" ] && . "$CONF_DIR/env/nginx.sh"
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # Additional predefined variables
-RANDOM_APP_HASH="$(__random_password 24))"
-
-# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-# Additional variables
 if [ -d "/app" ]; then
   __is_dir_empty "/app" && __file_copy "$WWW_ROOT_DIR/." "/app/"
   rm -Rf "$WWW_ROOT_DIR" && ln -sf "/app" "$WWW_ROOT_DIR"
@@ -149,14 +146,16 @@ elif [ -d "/data/htdocs" ]; then
   rm -Rf "$WWW_ROOT_DIR" && ln -sf "/app" "$WWW_ROOT_DIR"
   WWW_ROOT_DIR="/data/htdocs" WORK_DIR="/data/htdocs"
 fi
-
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# Additional variables
+RANDOM_APP_HASH="$(__random_password 24))"
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # Specifiy custom directories to be created
 ADD_APPLICATION_FILES=""
 ADD_APPLICATION_DIRS=""
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 APPLICATION_FILES="$LOG_DIR/nginx.log"
-APPLICATION_DIRS="$RUN_DIR $ETC_DIR $CONF_DIR $LOG_DIR"
+APPLICATION_DIRS="$RUN_DIR $ETC_DIR $CONF_DIR $LOG_DIR $TMP_DIR"
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # Additional config dirs - will be Copied to /etc/$name
 ADDITIONAL_CONFIG_DIRS=""
@@ -244,10 +243,6 @@ __update_conf_files() {
   # __replace "" "" "$CONF_DIR/nginx.conf"
   # replace variables recursively
   #  __find_replace "" "" "$CONF_DIR"
-  __find_replace "REPLACE_WWW_USER" "${SERVICE_USER:-root}" "$CONF_DIR"
-  __find_replace "REPLACE_APP_USER" "${SERVICE_USER:-root}" "$CONF_DIR"
-  __find_replace "REPLACE_WWW_GROUP" "${SERVICE_GROUP:-${SERVICE_USER:-root}}" "$CONF_DIR"
-  __find_replace "REPLACE_APP_GROUP" "${SERVICE_GROUP:-${SERVICE_USER:-root}}" "$CONF_DIR"
 
   # execute if directory is empty
   #__is_dir_empty "" && true || false
